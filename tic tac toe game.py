@@ -1,0 +1,128 @@
+###Text tic tac toe game
+
+board = [' ' for x in range(10)] ##creates a bord with blank spaces
+
+
+def insertLetter(letter, pos): ##inserts letter into a board
+    board[pos] = letter
+
+def spaceIsFree(pos): ##checks is space is free
+    return board[pos] == ' '
+
+def printBoard(board): ##printing our board
+    print('   |   |')
+    print(' ' + board[1] + ' | ' + board[2] + ' | ' + board[3])
+    print('   |   |')
+    print('-----------')
+    print('   |   |')
+    print(' ' + board[4] + ' | ' + board[5] + ' | ' + board[6])
+    print('   |   |')
+    print('-----------')
+    print('   |   |')
+    print(' ' + board[7] + ' | ' + board[8] + ' | ' + board[9])
+    print('   |   |')
+
+
+def isWinner(bo, le): ##this one checks if there is a winner
+    return (bo[7] == le and bo[8] == le and bo[9] == le) or (bo[4] == le and bo[5] == le and bo[6] == le) or (bo[1] == le and bo[2] == le and bo[3] == le) or (bo[1] == le and bo[4] == le and bo[7] == le) or (bo[2] == le and bo[5] == le and bo[8] == le) or (bo[3] == le and bo[6] == le and bo[9] == le) or (bo[1] == le and bo[5] == le and bo[9] == le) or (bo[7] == le and bo[5] == le and bo[3] == le)
+
+def playerMove(): ##func for player move
+    run = True
+    while run:
+        move = input('Please select a position to plase an \'X\'(1-9):')
+        try:
+            move = int(move)
+            if move > 0 and move < 10:
+                if spaceIsFree(move):
+                    run = False
+                    insertLetter('X', move)
+                else:
+                    print('Sorry, this space is occupied!')
+            else:
+                print('Please type a number within the range!')
+        except:
+            print('Please, type a number!')
+
+
+def compMove():
+    possibleMoves = [x for x, letter in enumerate(board) if letter == ' ' and x !=0]
+    move = 0
+
+    for let in ['O', 'X']: ##checking for win
+        for i in possibleMoves:
+            boardCopy = board[:]
+            boardCopy[i] = let
+            if isWinner(boardCopy, let):
+                move = i
+                return move
+
+    cornersOpen = [] ##checking for corners
+    for i in possibleMoves:
+        if i in [1,3,7,9]:
+            cornersOpen.append(i)
+            
+    if len(cornersOpen) > 0:
+        move = selectRandom(cornersOpen)
+        return move
+
+    if 5 in possibleMoves: ## checking center
+        move = 5
+        return move
+    
+    edgeOpen = [] ##checking for sides
+    for i in possibleMoves:
+        if i in [2,4,6,8]:
+            edgeOpen.append(i)
+            
+    if len(edgeOpen) > 0:
+        move = selectRandom(edgeOpen)
+        return move
+
+    return move
+
+def isBoardFull(board): ##check is board is full
+    if board.count(' ') > 1:
+        return False
+    else:
+        return True
+
+def selectRandom(li):
+    import random
+    ln = len(li)
+    r = random.randrange(0,ln)
+    return li[r]
+
+def main(): ##sequence for moves
+    print('Welcome to Text Tic Tac Toe game!\nIt\'s simple game which you can play right in console!\nYou go first.')
+    printBoard(board)
+
+    while not(isBoardFull(board)):
+        if not(isWinner(board, 'O')):
+            playerMove()
+            printBoard(board)
+        else:
+            print('Oops, O\'s won this time!')
+            break
+        
+        if not(isWinner(board, 'X')):
+            move = compMove()
+            if move == 0:
+                print('Tie Game!')
+            else:
+                insertLetter('O', move)
+                print('Computer plased an \'O\' in position', move, ':')
+                printBoard(board)
+        else:
+            print('Congrat\'s, X\'s won this time!')
+            break
+                   
+main()
+
+while True:
+    answer = input('Want to play a game again? (Y/N)')
+    if answer.lower() == 'y' or answer.lower() == 'yes':
+        board = [' ' for x in range(10)]
+        print('----------------------------------------')
+        main()
+    else:
+        break
